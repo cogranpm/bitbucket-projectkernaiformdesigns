@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -29,7 +30,7 @@ public class NavigationShell extends ApplicationWindow {
 		public void dispose() {
 		}
 		public Object[] getElements(Object inputElement) {
-			return getChildren(inputElement);
+			return ArrayContentProvider.getInstance().getElements(inputElement);
 		}
 		public Object[] getChildren(Object parentElement) {
 			return new Object[] { "item_0", "item_1", "item_2" };
@@ -49,6 +50,13 @@ public class NavigationShell extends ApplicationWindow {
 			return super.getText(element);
 		}
 	}
+	
+	private final String[] navigationData = new String[] { "Models", "Scripts", "Templates", "Environments", "Builds" };
+	
+	private final String[] getNavigationData()
+	{
+		return navigationData;
+	}
 
 	/**
 	 * Create the application window.
@@ -59,6 +67,7 @@ public class NavigationShell extends ApplicationWindow {
 		addToolBar(SWT.FLAT | SWT.WRAP);
 		addMenuBar();
 		addStatusLine();
+		
 	}
 
 	/**
@@ -86,10 +95,14 @@ public class NavigationShell extends ApplicationWindow {
 		lblNewLabel.setText("New Label");
 		
 		Composite shellNavTreeBody = new Composite(shellNavTree, SWT.NONE);
-		shellNavTreeBody.setLayout(new FillLayout(SWT.HORIZONTAL));
-		shellNavTreeBody.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+		shellNavTreeBody.setLayout(new FillLayout(SWT.VERTICAL));
+		GridData gd_shellNavTreeBody = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_shellNavTreeBody.heightHint = 209;
+		gd_shellNavTreeBody.widthHint = 152;
+		shellNavTreeBody.setLayoutData(gd_shellNavTreeBody);
 		
 		TreeViewer treeViewer = new TreeViewer(shellNavTreeBody, SWT.BORDER);
+		treeViewer.setColumnProperties(new String[] {"Name"});
 		Tree tree = treeViewer.getTree();
 		treeViewer.setContentProvider(new TreeContentProvider());
 		treeViewer.setLabelProvider(new ViewerLabelProvider());
@@ -98,6 +111,8 @@ public class NavigationShell extends ApplicationWindow {
 		shellNavMain.setLayout(new FillLayout(SWT.HORIZONTAL));
 		sashForm.setWeights(new int[] {1, 4});
 
+		treeViewer.setInput(getNavigationData());
+		
 		return container;
 	}
 
